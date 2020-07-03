@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Adriano Ramos</title>
+    <link>https://adrianoramos.github.io/post/</link>
+    <description>Recent content in Posts on Adriano Ramos</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>pt-br</language>
+    <lastBuildDate>Wed, 20 Jan 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://adrianoramos.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Problemas ao gerar miniaturas com sorl-thumbnail no Django e AWS (S3, EC2)</title>
+      <link>https://adrianoramos.github.io/post/django-sorl-thumbnail-aws/</link>
+      <pubDate>Wed, 20 Jan 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://adrianoramos.github.io/post/django-sorl-thumbnail-aws/</guid>
+      <description>No final do ano passado trabalhei em um projeto usando o framework Python Django.</description>
+    </item>
+    
+  </channel>
+</rss>

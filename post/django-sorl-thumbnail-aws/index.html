@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pt-br" lang="pt-br">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.73.0" />
+
+  <title>Problemas ao gerar miniaturas com sorl-thumbnail no Django e AWS (S3, EC2) &middot; Adriano Ramos</title>
+
+  <meta name="description" content="Este artigo pode ajudá-lo a solucionar o problema ao gerar miniaturas de imagens usando o sorl-thumbnail." />
+
+  
+
+<meta itemprop="name" content="Problemas ao gerar miniaturas com sorl-thumbnail no Django e AWS (S3, EC2)">
+<meta itemprop="description" content="Este artigo pode ajudá-lo a solucionar o problema ao gerar miniaturas de imagens usando o sorl-thumbnail.">
+<meta itemprop="datePublished" content="2016-01-20T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2016-01-20T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="234">
+
+
+
+<meta itemprop="keywords" content="django,sorl-thumbnail,aws," />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Problemas ao gerar miniaturas com sorl-thumbnail no Django e AWS (S3, EC2)"/>
+<meta name="twitter:description" content="Este artigo pode ajudá-lo a solucionar o problema ao gerar miniaturas de imagens usando o sorl-thumbnail."/>
+
+
+<meta property="og:title" content="Problemas ao gerar miniaturas com sorl-thumbnail no Django e AWS (S3, EC2)" />
+<meta property="og:description" content="Este artigo pode ajudá-lo a solucionar o problema ao gerar miniaturas de imagens usando o sorl-thumbnail." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://adrianoramos.github.io/post/django-sorl-thumbnail-aws/" />
+<meta property="article:published_time" content="2016-01-20T00:00:00+00:00" />
+<meta property="article:modified_time" content="2016-01-20T00:00:00+00:00" /><meta property="og:site_name" content="Adriano Ramos" />
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+      
+
+      <h1>Adriano Ramos</h1>
+
+      
+      <p class="lead">Software Developer</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://adrianoramos.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/posts/">Posts</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://www.linkedin.com/in/adrianorsilva" rel="me" title="Linkedin" target="_blank">
+        <i class="fab fa-linkedin" aria-hidden="true"></i>
+      </a>
+      
+      <a href="https://github.com/adrianoramos" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+      <a href="https://stackoverflow.com/users/803316/adriano-silva" rel="me" title="Stack Overflow" target="_blank">
+        <i class="fab fa-stack-overflow" aria-hidden="true"></i>
+      </a>
+      
+      <a href="https://twitter.com/adrianorsilva" rel="me" title="Twitter" target="_blank">
+        <i class="fab fa-twitter" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1>Problemas ao gerar miniaturas com sorl-thumbnail no Django e AWS (S3, EC2)</h1>
+
+  <div class="post-date">
+    <time datetime="2016-01-20T00:00:00Z">Jan 20, 2016</time> &middot; 2 min read
+  </div>
+
+  <p>No final do ano passado trabalhei em um projeto usando o framework Python Django. Uma das funcionalidades do projeto permitia que anunciantes incluíssem informações dos produtos, como imagem e descrição do produto.</p>
+<p>Durante a renderização do template de visualização do produto as miniaturas das imagens do produto não estavam sendo geradas corretamente.</p>
+<p>Depois testar algumas possibilidades, resolvi fazer essa lista com algumas possíveis soluções. Se você também está enfrentando dificuldades para a exibição de miniaturas usando o sorl-thumbnail, teste os passos abaixo no seu projeto:</p>
+<p><strong>1 - Se você estiver usando o Amazon S3 no seu projeto. Verifique as configurações.</strong></p>
+<p>O exemplo abaixo está usando o app <a href="https://pypi.python.org/pypi/django-storages-redux">django-storage-redux</a>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">DEFAULT_FILE_STORAGE <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;storages.backends.s3boto.S3BotoStorage&#39;</span>
+
+AWS_ACCESS_KEY_ID <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;####################&#39;</span>
+AWS_SECRET_ACCESS_KEY <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;################################&#39;</span>
+AWS_STORAGE_BUCKET_NAME <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;bucketname&#39;</span>
+AWS_AUTO_CREATE_BUCKET <span style="color:#f92672">=</span> False
+AWS_QUERYSTRING_AUTH <span style="color:#f92672">=</span> False
+
+MEDIA_URL <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">.s3.amazonaws.com/&#39;</span> <span style="color:#f92672">%</span> AWS_STORAGE_BUCKET_NAME
+STATICFILES_STORAGE <span style="color:#f92672">=</span> DEFAULT_FILE_STORAGE
+STATIC_URL <span style="color:#f92672">=</span> MEDIA_URL</code></pre></div>
+<p><strong>2 - Tente gerar uma miniatura manualmente.</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">python manage.py shell</code></pre></div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">from sorl.thumbnail import get_thumbnail
+from products.models import Product
+
+product <span style="color:#f92672">=</span> Product.objects.get<span style="color:#f92672">(</span>id<span style="color:#f92672">=</span>1<span style="color:#f92672">)</span>
+image <span style="color:#f92672">=</span> get_thumbnail<span style="color:#f92672">(</span>product.image, <span style="color:#e6db74">&#39;250x150&#39;</span>, crop<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;center&#39;</span>, quality<span style="color:#f92672">=</span>75<span style="color:#f92672">)</span></code></pre></div>
+<p><em>Verifique se dentro diretório <strong>media</strong> uma pasta <strong>cache</strong> foi criada contendo a miniatura da imagem.</em></p>
+<p><strong>3 - Verifique se as dependências estão instaladas.</strong></p>
+<p>Se sua instância EC2 está usando uma distribuição como o Ubuntu você pode instalar as dependências facilmente usando o gerenciador de pacotes <strong>apt</strong>.
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt-get install libgraphicsmagick++-dev
+pip uninstall pillow
+pip install --no-cache-dir -I pillow</code></pre></div></p>
+<p>Comentários, dúvidas, sugestões use o formulário abaixo. Espero ter ajudado. Um abraço!</p>
+
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; Adriano Ramos 2020
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    &middot; Build with <a href="https://gohugo.io/" target="_blank">Hugo</a> & <a href="https://themes.gohugo.io/soho/" target="_blank">Soho</a> theme
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-69017272-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+</body>
+</html>
